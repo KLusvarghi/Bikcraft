@@ -1,0 +1,120 @@
+// Responsivo
+
+@mixin responsivo($dispositivo) {
+	@if $dispositivo == t {
+		@media only screen and (min-width: 768px) and (max-width: 959px) {
+			@content;
+		}
+	} @else if $dispositivo == m {
+		@media only screen and (max-width: 767px) {
+			@content;	
+		}
+	}
+}
+
+// ------------------------------------------
+
+*, *:before, *:after {
+  -webkit-box-sizing: border-box; 
+  -moz-box-sizing: border-box; 
+  box-sizing: border-box;
+}
+
+$container: 960; // sendo o tamanho do nosso container (página)
+$gutter: 20; // sendo 10px de margin-left e 10px de margin-right
+$colunas: 16;
+
+// sendo uma seleção invisivel, que só será lida pelo "css" quando extendida a algum grupo
+// criando um seletor que não existe
+%grid {
+	float: left;
+	margin-left: ($gutter / 2) + px;
+	margin-right: ($gutter / 2) + px;
+}
+
+// criando o sistema de grid
+// neste caso, queremos que os diversos grids, tenham o mesmo valor, então se torna mais facl usar o extend por que economisamos bits
+@for $i from 1 through $colunas {
+	$width: $container / $colunas * $i - $gutter;
+	.grid-#{$i} {
+		@extend %grid;
+		width: $width + px;
+	}
+}
+
+// para quando dividimos 1 grid em 3
+.grid-1-3 {
+	@extend %grid;
+	width: $container / 3 - $gutter + px;
+}
+
+.container {
+	width: $container + px;
+	margin: 0 auto;
+	padding: 0px;
+	position: relative;
+}
+
+.container:after, .container:before {
+	content: " ";
+	display: table;
+}
+
+.container:after {
+	clear: both;
+}
+
+
+// incluindo o mixin "responsivo" e passando a variavel
+// e tudo que estiver dentro dele será ativado quando o media query coincidi com o tamnho da tela
+@include responsivo(t){
+	
+	// criando um grid para a parte do tablet
+	$container: 768; // sendo o tamanho do nosso container (página)
+		
+	// criando o sistema de grid
+	@for $i from 1 through $colunas {
+		$width: $container / $colunas * $i - $gutter;
+		.grid-#{$i} {
+			width: $width + px;
+		}
+	}
+
+	// para quando dividimos em 1 terço
+	.grid-1-3 {
+		width: $container / 3 - $gutter + px;
+	}
+
+	.container {
+		width: $container + px;
+	}
+
+}
+
+// media para mobile
+
+@include responsivo(m){
+
+	$container: 300;
+
+	%mobile {
+		width: $container + px;
+		margin: 0 0 20px 0;
+		float: none;
+	}
+
+	@for $i from 1 through $colunas {
+		.grid-#{$i} {
+			@extend %mobile; 
+		}
+	}
+
+	.grid-1-3 {
+		@extend %mobile;
+	}
+
+	.container {
+		width: $container + px;
+	}
+
+}
